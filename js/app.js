@@ -31,34 +31,37 @@ document.addEventListener('DOMContentLoaded', ()=>{
 //Event Listeners para los select de busqueda 
 marcaSelect.addEventListener('change',(e) =>{
     dataSearch.marca = e.target.value;
-    filtarAuto();
+    filtrarAuto();
 });
 
 yearSelect.addEventListener('change',(e) =>{
     dataSearch.year =  parseInt(e.target.value);
-    filtarAuto();
+    filtrarAuto();
 });
 
 priceMinSelect.addEventListener('change',(e) =>{
-    dataSearch.minimo = e.target.value;
+    dataSearch.minimo = parseInt(e.target.value);
+    filtrarAuto();
 });
 
 priceMaxSelect.addEventListener('change',(e) =>{
     dataSearch.maximo = e.target.value;
+    filtrarAuto();
 });
 
 doorsSelect.addEventListener('change',(e) =>{
     dataSearch.puertas = parseInt(e.target.value);
-    filtarAuto();
+    filtrarAuto();
 });
 
 colorSelect.addEventListener('change',(e) =>{
     dataSearch.color = e.target.value;
+    filtrarAuto();
 });
 
 transmissionSelect.addEventListener('change',(e) =>{
     dataSearch.transmision = e.target.value;
-    console.log(dataSearch);
+    filtrarAuto();
 });
 
 //Funciones
@@ -96,9 +99,22 @@ function generateYears(){
 
 //Function para filtrar en base a la busqueda
 
-function filtarAuto() {
-    const resultado = autos.filter(filterMarca).filter(filterYear).filter(filterDoors);
+function filtrarAuto() {
+    const resultado = autos.filter(filterMarca).filter(filterYear).filter(filterMinPrice).filter(filterMaxPrice).filter(filterDoors).filter(filterColor).filter(filterTransmission);
     showBD(resultado);
+    noDataSearch(resultado);
+}
+
+//Funcion para mostrar mensaje de no se encontraron resultados
+
+function noDataSearch(res){
+    if (res.length == 0) {
+        console.log('No se encontraron datos');
+        const mensajeError = document.createElement('p');
+        mensajeError.textContent = "No se encontraron resultados de la busqueda";
+        mensajeError.classList.add('alerta', 'error');
+        resultado.appendChild(mensajeError);
+    }
 }
 
 //Funciones de alto nivel es una funcion que se ejecuta como paramentro dentro de otra funcion
@@ -119,10 +135,47 @@ function filterYear(auto){
     return auto;
 }
 
+//funcion para registrar los precios minimos y maximos
+
+function filterMinPrice(auto) {
+    const { minimo } = dataSearch;
+
+    if(minimo){
+        return auto.precio >= minimo;
+        console.log(auto.precio >= minimo);
+    }
+    return auto;
+}
+
+function filterMaxPrice(auto) {
+    const { maximo } = dataSearch;
+
+    if(maximo){
+        return auto.precio <= maximo;
+    }
+    return auto;
+}
+
 function filterDoors(auto){
     const { puertas } = dataSearch;
     if(puertas){
         return auto.puertas === puertas;
+    }
+    return auto;
+}
+
+function filterColor(auto){
+    const { color } = dataSearch;
+    if(color){
+        return auto.color === color;
+    }
+    return auto;
+}
+
+function filterTransmission(auto){
+    const { transmision } = dataSearch;
+    if(transmision){
+        return auto.transmision === transmision;
     }
     return auto;
 }
